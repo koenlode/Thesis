@@ -1,0 +1,8 @@
+https://github.com/deepmind/graphcast/archive/master.zip
+google.cloud
+google-cloud-storage
+gcsfs
+zarr
+shapely
+jax[cuda12]
+nvidia-smi
