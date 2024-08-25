@@ -1,0 +1,22 @@
+# Ignore everything by default
+*
+
+# Unignore directories (necessary for including files in them)
+!*/
+
+# Include specific files and directories
+!gitignore
+!ds_land_sea_mask.nc
+!ds_geopotential_at_surface.nc
+!master_notebook.ipynb
+!graphcast_forecasting.py
+!graphcast_forecasting.ipynb
+!ne_10m_admin_0_countries/
+!ne_10m_admin_1_states_provinces/
+
+# Exclude virtual environments
+virtualenvs/
+
+# Exclude Graphcast
+Graphcast
+GEN/
