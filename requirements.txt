@@ -6,3 +6,6 @@ zarr
 shapely
 jax[cuda12]
 nvidia-smi
+geopandas
+xskillscore
+h5netcdf
