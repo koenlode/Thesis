@@ -67,7 +67,7 @@ def datetime_steps_slicer(ds, target_start_date, num_timesteps):
     ds_slice = ds.sel(time=slice(timedelta_start, timedelta_end))
     return ds_slice
 
-def main(start_date: str, timesteps: int):
+def main(start_date: str, timesteps: int, netherlands: bool=True):
     gcs_client = storage.Client.create_anonymous_client()
     gcs_bucket = gcs_client.get_bucket("dm_graphcast")
 
@@ -166,13 +166,13 @@ def main(start_date: str, timesteps: int):
         predictor = construct_wrapped_graphcast(model_config, task_config)
         return predictor(inputs, targets_template=targets_template, forcings=forcings)
 
-    @hk.transform_with_state
-    def loss_fn(model_config, task_config, inputs, targets, forcings):
-        predictor = construct_wrapped_graphcast(model_config, task_config)
-        loss, diagnostics = predictor.loss(inputs, targets, forcings)
-        return xarray_tree.map_structure(
-            lambda x: xarray_jax.unwrap_data(x.mean(), require_jax=True),
-            (loss, diagnostics))
+    # @hk.transform_with_state
+    # def loss_fn(model_config, task_config, inputs, targets, forcings):
+    #     predictor = construct_wrapped_graphcast(model_config, task_config)
+    #     loss, diagnostics = predictor.loss(inputs, targets, forcings)
+    #     return xarray_tree.map_structure(
+    #         lambda x: xarray_jax.unwrap_data(x.mean(), require_jax=True),
+    #         (loss, diagnostics))
 
     # def grads_fn(params, state, model_config, task_config, inputs, targets, forcings):
     #     def _aux(params, state, i, t, f):
@@ -225,9 +225,16 @@ def main(start_date: str, timesteps: int):
                        'prediction_timedelta': predictions.prediction_timedelta, 
                        'time': predictions.time})
 
-    # Naming convention for the NetCDF file
-    filename = f'graphcast_{start_date}_{timesteps}.nc'
-    
+    if netherlands:
+        # Limiting extent to the Netherlands
+        predictions = predictions.sel(lat=slice(50.5, 55.75), lon=slice(2.25, 7.5))
+
+        # Naming convention for the NetCDF file
+        filename = f'gc_nl_{start_date}_{timesteps}.nc'
+
+    else:
+        filename = f'gc_wrld_{start_date}_{timesteps}.nc'
+
     # Write the predictions to a NetCDF file
     predictions.to_netcdf(filename)
     print(f"Predictions written to {filename}")
