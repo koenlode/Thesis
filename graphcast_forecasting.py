@@ -183,7 +183,7 @@ def main(start_date: str, timesteps: int, netherlands: bool=True):
     #     (loss, (diagnostics, next_state)), grads = jax.value_and_grad(
     #         _aux, has_aux=True)(params, state, inputs, targets, forcings)
     #     return loss, diagnostics, next_state, grads
-
+    
     def with_configs(fn):
         return functools.partial(fn, model_config=model_config, task_config=task_config)
 
